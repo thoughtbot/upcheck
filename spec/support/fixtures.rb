@@ -6,7 +6,7 @@ require "pathname"
 module Fixtures
   ROOT = Pathname.new(File.expand_path("../fixtures", __dir__))
 
-  module_function
+  extend self
 
   def read(name)
     (ROOT / name).read

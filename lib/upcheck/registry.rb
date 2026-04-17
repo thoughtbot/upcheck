@@ -15,7 +15,7 @@ module Upcheck
       vercel: "https://www.vercel-status.com"
     }.freeze
 
-    module_function
+    extend self
 
     def resolve(name)
       key = name.to_sym
