@@ -2,6 +2,8 @@
 
 require "upcheck"
 require "webmock/rspec"
+require_relative "support/fixtures"
+require_relative "support/upcheck_helpers"
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
@@ -10,6 +12,8 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  config.include UpcheckHelpers
 
   config.before do
     Upcheck.reset!

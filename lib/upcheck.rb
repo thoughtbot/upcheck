@@ -4,6 +4,8 @@ require_relative "upcheck/version"
 require_relative "upcheck/errors"
 require_relative "upcheck/configuration"
 require_relative "upcheck/http_client"
+require_relative "upcheck/registry"
+require_relative "upcheck/provider"
 
 module Upcheck
   class << self
@@ -17,6 +19,10 @@ module Upcheck
 
     def reset!
       @configuration = Configuration.new
+    end
+
+    def for(name)
+      Provider.new(Registry.resolve(name))
     end
   end
 end
