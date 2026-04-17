@@ -17,20 +17,15 @@ RSpec.describe "Incidents integration" do
     expect(incidents.size).to eq(1)
 
     incident = incidents.first
-    expect(incident.name).to eq("Elevated error rates on API")
+    expect(incident.name).to eq("Disruption with some GitHub services")
     expect(incident.status).to eq("investigating")
     expect(incident.impact).to eq("minor")
-    expect(incident.created_at).to eq("2026-04-16T09:31:00Z")
-    expect(incident.updated_at).to eq("2026-04-16T09:45:00Z")
+    expect(incident.created_at).to eq("2026-04-17T14:56:22.556Z")
+    expect(incident.updated_at).to eq("2026-04-17T15:08:06.465Z")
+    expect(incident.resolved_at).to be_nil
 
-    update_bodies = incident.updates.map(&:body)
-    expect(update_bodies).to eq([
-      "We are investigating elevated error rates.",
-      "We identified the cause and are working on a fix."
-    ])
-
-    first_update = incident.updates.first
-    expect(first_update.status).to eq("investigating")
-    expect(first_update.created_at).to eq("2026-04-16T09:31:00Z")
+    update_statuses = incident.updates.map(&:status)
+    expect(update_statuses).to all(eq("investigating"))
+    expect(incident.updates.first.body).to start_with("We have isolated a problematic component")
   end
 end

@@ -1,13 +1,13 @@
 {
   "page": {
-    "id": "abc123",
-    "name": "Example Status",
-    "url": "https://status.example.com",
+    "id": "kctbh9vrtdwd",
+    "name": "GitHub",
+    "url": "https://www.githubstatus.com",
     "time_zone": "Etc/UTC",
-    "updated_at": "2026-04-16T10:00:00Z"
+    "updated_at": "2026-04-17T15:20:25.558Z"
   },
   "status": {
     "indicator": "critical",
-    "description": "Critical Service Outage"
+    "description": "Critical System Outage"
   }
 }

@@ -9,29 +9,29 @@ RSpec.describe "Components integration" do
   it "lists every component returned by the API" do
     names = Upcheck.for(:test).components.map(&:name)
 
-    expect(names).to contain_exactly("API", "Dashboard", "Webhooks", "File Uploads")
+    expect(names).to contain_exactly("Git Operations", "Webhooks", "Issues", "Pull Requests")
   end
 
   it "looks up a component by name and exposes its status" do
     provider = Upcheck.for(:test)
 
-    api = provider.component("API")
-    dashboard = provider.component("Dashboard")
+    git = provider.component("Git Operations")
+    issues = provider.component("Issues")
     webhooks = provider.component("Webhooks")
-    uploads = provider.component("File Uploads")
+    pulls = provider.component("Pull Requests")
 
-    expect(api.status).to eq(Upcheck::Component::STATUS_OPERATIONAL)
-    expect(api.operational?).to be(true)
+    expect(git.status).to eq(Upcheck::Component::STATUS_OPERATIONAL)
+    expect(git.operational?).to be(true)
 
-    expect(dashboard.status).to eq(Upcheck::Component::STATUS_DEGRADED_PERFORMANCE)
-    expect(dashboard.degraded?).to be(true)
-    expect(dashboard.operational?).to be(false)
+    expect(issues.status).to eq(Upcheck::Component::STATUS_DEGRADED_PERFORMANCE)
+    expect(issues.degraded?).to be(true)
+    expect(issues.operational?).to be(false)
 
     expect(webhooks.status).to eq(Upcheck::Component::STATUS_MAJOR_OUTAGE)
     expect(webhooks.major_outage?).to be(true)
 
-    expect(uploads.status).to eq(Upcheck::Component::STATUS_PARTIAL_OUTAGE)
-    expect(uploads.partial_outage?).to be(true)
+    expect(pulls.status).to eq(Upcheck::Component::STATUS_PARTIAL_OUTAGE)
+    expect(pulls.partial_outage?).to be(true)
   end
 
   it "returns nil when the component is not found" do
