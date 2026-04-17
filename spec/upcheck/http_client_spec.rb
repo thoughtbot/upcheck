@@ -98,6 +98,14 @@ RSpec.describe Upcheck::HTTPClient do
       expect(result).to eq("ok" => true)
     end
 
+    it "raises Upcheck::HTTPError when a redirect is missing a Location header" do
+      stub_request(:get, url).to_return(status: 302, headers: {})
+
+      expect {
+        described_class.new.get_json(url)
+      }.to raise_error(Upcheck::HTTPError, /missing Location header/i)
+    end
+
     it "raises Upcheck::HTTPError after too many redirects" do
       stub_request(:get, url).to_return(
         status: 301,
