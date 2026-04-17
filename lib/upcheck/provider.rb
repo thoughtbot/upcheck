@@ -34,6 +34,14 @@ module Upcheck
       status == INDICATOR_MAJOR || status == INDICATOR_CRITICAL
     end
 
+    def components
+      @components ||= http_get("components.json").fetch("components", []).map { |p| Component.new(p) }
+    end
+
+    def component(name)
+      components.find { |component| component.name == name }
+    end
+
     private
 
     attr_reader :http_client
