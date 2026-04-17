@@ -15,7 +15,8 @@ module Upcheck
       vercel: -> { Adapters::Statuspage.new("https://www.vercel-status.com") },
       stripe: -> { Adapters::Statuspage.new("https://www.stripestatus.com") },
       shopify: -> { Adapters::Statuspage.new("https://www.shopifystatus.com") },
-      sentry: -> { Adapters::Statuspage.new("https://status.sentry.io") }
+      sentry: -> { Adapters::Statuspage.new("https://status.sentry.io") },
+      heroku: -> { Adapters::Heroku.new }
     }.freeze
 
     extend self

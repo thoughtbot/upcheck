@@ -13,10 +13,10 @@ Upcheck.for(:github).component("Git Operations").operational?
 ```
 
 > [!NOTE]
-> Upcheck currently reads from services that publish a public
+> Upcheck supports any service that publishes a public
 > [Atlassian Statuspage](https://www.atlassian.com/software/statuspage) v2 API
-> (the majority of SaaS status pages). Support for other providers can be added
-> later without changing this public interface.
+> (the majority of SaaS status pages), plus Heroku's own status format. More
+> non-Statuspage adapters can be added behind the same interface.
 
 ## Installation
 
@@ -74,14 +74,14 @@ Each provider object caches the JSON it fetches, so repeat calls to `operational
 ```ruby
 Upcheck.configure do |config|
   config.http_timeout = 3
-  config.register_provider(:my_saas, "https://status.my-saas.example.com")
+  config.register_provider(:my_saas) { Upcheck::Adapters::Statuspage.new("https://status.my-saas.example.com") }
 end
 ```
 
 | Option | Default | Description |
 |---|---|---|
 | `http_timeout` | `5` | Seconds to wait for both open and read on each HTTP request. |
-| `register_provider(name, url)` | (none) | Registers a custom provider by symbol name and base URL. The URL must be the root of a service that exposes the Atlassian Statuspage v2 API (i.e., `<url>/api/v2/status.json` returns the expected JSON). Overrides built-ins when the name matches. |
+| `register_provider(name, &block)` | (none) | Registers a provider. The block is called on each `Upcheck.for(name)` and must return an adapter instance (e.g., `Upcheck::Adapters::Statuspage.new(url)`, `Upcheck::Adapters::Heroku.new`, or your own). Overrides built-ins when the name matches. |
 
 ## Built-in providers
 
@@ -102,16 +102,17 @@ Upcheck ships with a registry of well-known providers so you can reference them 
 | `:stripe` | https://www.stripestatus.com |
 | `:shopify` | https://www.shopifystatus.com |
 | `:sentry` | https://status.sentry.io |
+| `:heroku` | https://status.heroku.com |
 
 Missing one? Register it at runtime. Any service hosted on Atlassian Statuspage
-will work.
+works out of the box; other formats need a custom adapter.
 
 ```ruby
 Upcheck.configure do |config|
-  config.register_provider(:shopify, "https://www.shopifystatus.com")
+  config.register_provider(:my_saas) { Upcheck::Adapters::Statuspage.new("https://status.my-saas.example.com") }
 end
 
-Upcheck.for(:shopify).operational?
+Upcheck.for(:my_saas).operational?
 ```
 
 ## Errors

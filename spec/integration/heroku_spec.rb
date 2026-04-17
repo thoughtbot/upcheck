@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+RSpec.describe "Heroku provider integration" do
+  it "reports operational when all Heroku systems are green" do
+    stub_heroku("current_status_operational.json")
+
+    expect(Upcheck.for(:heroku).operational?).to be(true)
+  end
+end

@@ -1,0 +1,9 @@
+{
+  "status": [
+    {"system": "Apps", "status": "yellow"},
+    {"system": "Data", "status": "green"},
+    {"system": "Tools", "status": "green"}
+  ],
+  "incidents": [],
+  "scheduled": []
+}

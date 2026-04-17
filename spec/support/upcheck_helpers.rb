@@ -13,4 +13,9 @@ module UpcheckHelpers
     stub_request(:get, "#{base_url}/api/v2/#{path}")
       .to_return(status: status, body: Fixtures.read("statuspage/#{fixture}"))
   end
+
+  def stub_heroku(fixture, status: 200)
+    stub_request(:get, Upcheck::Adapters::Heroku::URL)
+      .to_return(status: status, body: Fixtures.read("heroku/#{fixture}"))
+  end
 end

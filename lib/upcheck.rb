@@ -9,6 +9,7 @@ require_relative "upcheck/component"
 require_relative "upcheck/incident"
 require_relative "upcheck/registry"
 require_relative "upcheck/adapters/statuspage"
+require_relative "upcheck/adapters/heroku"
 require_relative "upcheck/provider"
 
 module Upcheck
