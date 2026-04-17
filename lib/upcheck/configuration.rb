@@ -10,10 +10,13 @@ module Upcheck
     def initialize
       @http_timeout = DEFAULT_HTTP_TIMEOUT
       @providers = {}
+      Registry.register_defaults(self)
     end
 
-    def register_provider(name, base_url)
-      @providers[name.to_sym] = base_url.to_s
+    def register_provider(name, &block)
+      raise ArgumentError, "register_provider requires a block returning an adapter" unless block
+
+      @providers[name.to_sym] = block
     end
   end
 end

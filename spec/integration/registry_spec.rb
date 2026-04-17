@@ -8,14 +8,12 @@ RSpec.describe "Provider registry integration" do
     expect(Upcheck.for(:anthropic).operational?).to be(true)
   end
 
-  it "ships an entry for each of the required built-in providers with an https URL" do
+  it "ships an entry for each of the required built-in providers" do
     required = %i[anthropic openai github twilio datadog rubygems]
 
     required.each do |name|
-      url = Upcheck::Registry::BUILT_IN[name]
-
-      expect(url).to start_with("https://"),
-        "expected built-in provider :#{name} to have an https base URL, got #{url.inspect}"
+      expect(Upcheck::Registry::BUILT_IN).to have_key(name),
+        "expected :#{name} to be in the built-in registry"
     end
   end
 

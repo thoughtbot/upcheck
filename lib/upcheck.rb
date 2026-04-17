@@ -26,7 +26,7 @@ module Upcheck
     end
 
     def for(name)
-      Provider.new(Adapters::Statuspage.new(Registry.resolve(name)))
+      Provider.new(Registry.resolve(name))
     end
   end
 end

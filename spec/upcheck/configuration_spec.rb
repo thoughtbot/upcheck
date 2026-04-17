@@ -8,26 +8,36 @@ RSpec.describe Upcheck::Configuration do
       expect(config.http_timeout).to eq(5)
     end
 
-    it "starts with no custom providers registered" do
+    it "seeds the built-in Statuspage providers" do
       config = Upcheck::Configuration.new
 
-      expect(config.providers).to eq({})
+      expect(config.providers).to include(:anthropic, :openai, :github)
     end
   end
 
   describe "#register_provider" do
-    it "registers a provider under the given symbol" do
+    it "stores the factory block under the given symbol" do
       config = Upcheck::Configuration.new
-      config.register_provider(:my_service, "https://status.my-service.com")
+      adapter = double("adapter")
 
-      expect(config.providers[:my_service]).to eq("https://status.my-service.com")
+      config.register_provider(:my_service) { adapter }
+
+      expect(config.providers[:my_service].call).to eq(adapter)
     end
 
     it "coerces string names to symbols" do
       config = Upcheck::Configuration.new
-      config.register_provider("my_service", "https://status.my-service.com")
+      adapter = double("adapter")
 
-      expect(config.providers[:my_service]).to eq("https://status.my-service.com")
+      config.register_provider("my_service") { adapter }
+
+      expect(config.providers[:my_service].call).to eq(adapter)
+    end
+
+    it "raises ArgumentError when no block is given" do
+      config = Upcheck::Configuration.new
+
+      expect { config.register_provider(:oops) }.to raise_error(ArgumentError)
     end
   end
 end

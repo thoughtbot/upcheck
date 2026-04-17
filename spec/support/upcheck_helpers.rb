@@ -4,7 +4,9 @@ module UpcheckHelpers
   BASE_URL = "https://status.test.example.com"
 
   def register_test_provider(name = :test, url = BASE_URL)
-    Upcheck.configure { |c| c.register_provider(name, url) }
+    Upcheck.configure do |config|
+      config.register_provider(name) { Upcheck::Adapters::Statuspage.new(url) }
+    end
   end
 
   def stub_statuspage(path, fixture:, base_url: BASE_URL, status: 200)
