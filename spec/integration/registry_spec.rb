@@ -3,7 +3,7 @@
 RSpec.describe "Provider registry integration" do
   it "resolves built-in providers to their Statuspage URLs" do
     stub_request(:get, "https://status.claude.com/api/v2/status.json")
-      .to_return(status: 200, body: Fixtures.read("status_operational.json"))
+      .to_return(status: 200, body: Fixtures.read("statuspage/status_operational.json"))
 
     expect(Upcheck.for(:anthropic).operational?).to be(true)
   end

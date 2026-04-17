@@ -11,6 +11,6 @@ module UpcheckHelpers
 
   def stub_statuspage(path, fixture:, base_url: BASE_URL, status: 200)
     stub_request(:get, "#{base_url}/api/v2/#{path}")
-      .to_return(status: status, body: Fixtures.read(fixture))
+      .to_return(status: status, body: Fixtures.read("statuspage/#{fixture}"))
   end
 end
