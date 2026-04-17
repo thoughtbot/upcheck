@@ -30,6 +30,11 @@ RSpec.describe Upcheck::Component do
       expect(described_class.new("status" => "major_outage").major_outage?).to be(true)
       expect(described_class.new("status" => "partial_outage").major_outage?).to be(false)
     end
+
+    it "maintenance? is true only for 'under_maintenance'" do
+      expect(described_class.new("status" => "under_maintenance").maintenance?).to be(true)
+      expect(described_class.new("status" => "operational").maintenance?).to be(false)
+    end
   end
 
   describe "#description" do

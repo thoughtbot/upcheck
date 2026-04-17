@@ -43,6 +43,16 @@ RSpec.describe Upcheck::Provider do
       stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_critical.json"))
       expect(described_class.new(base_url).major_outage?).to be(true)
     end
+
+    it "maintenance? is true only for maintenance indicator" do
+      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_maintenance.json"))
+      provider = described_class.new(base_url)
+
+      expect(provider.maintenance?).to be(true)
+      expect(provider.operational?).to be(false)
+      expect(provider.degraded?).to be(false)
+      expect(provider.major_outage?).to be(false)
+    end
   end
 
   describe "#description" do

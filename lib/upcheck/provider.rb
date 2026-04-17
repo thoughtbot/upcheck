@@ -6,6 +6,7 @@ module Upcheck
     INDICATOR_MINOR = "minor"
     INDICATOR_MAJOR = "major"
     INDICATOR_CRITICAL = "critical"
+    INDICATOR_MAINTENANCE = "maintenance"
 
     attr_reader :base_url
 
@@ -32,6 +33,10 @@ module Upcheck
 
     def major_outage?
       status == INDICATOR_MAJOR || status == INDICATOR_CRITICAL
+    end
+
+    def maintenance?
+      status == INDICATOR_MAINTENANCE
     end
 
     def components
