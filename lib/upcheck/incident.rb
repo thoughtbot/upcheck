@@ -7,7 +7,8 @@ module Upcheck
     end
 
     attribute :id, :name, :status, :impact, :shortlink,
-      :created_at, :updated_at, :started_at, :resolved_at
+      :created_at, :updated_at, :started_at, :resolved_at,
+      :scheduled_for, :scheduled_until
 
     def updates
       @updates ||= Update.build_all(@attributes["incident_updates"])

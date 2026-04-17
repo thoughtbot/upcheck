@@ -46,6 +46,10 @@ module Upcheck
       @incidents ||= fetch_incidents("incidents/unresolved.json", "incidents")
     end
 
+    def scheduled_maintenances
+      @scheduled_maintenances ||= fetch_incidents("scheduled-maintenances/active.json", "scheduled_maintenances")
+    end
+
     private
 
     attr_reader :http_client
