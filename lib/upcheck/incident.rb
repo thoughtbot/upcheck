@@ -10,7 +10,7 @@ module Upcheck
       :created_at, :updated_at, :started_at, :resolved_at
 
     def updates
-      @updates ||= Array(@attributes["incident_updates"]).map { |update| Update.new(update) }
+      @updates ||= Update.build_all(@attributes["incident_updates"])
     end
   end
 end

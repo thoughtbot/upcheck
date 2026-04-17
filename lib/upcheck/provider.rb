@@ -35,7 +35,7 @@ module Upcheck
     end
 
     def components
-      @components ||= http_get("components.json").fetch("components", []).map { |p| Component.new(p) }
+      @components ||= Component.build_all(http_get("components.json")["components"])
     end
 
     def component(name)
@@ -55,7 +55,7 @@ module Upcheck
     end
 
     def fetch_incidents(path, key)
-      http_get(path).fetch(key, []).map { |p| Incident.new(p) }
+      Incident.build_all(http_get(path)[key])
     end
 
     def http_get(path)

@@ -8,6 +8,10 @@ module Upcheck
       end
     end
 
+    def self.build_all(payloads)
+      Array(payloads).map { |payload| new(payload) }
+    end
+
     def initialize(attributes)
       @attributes = attributes || {}
     end
