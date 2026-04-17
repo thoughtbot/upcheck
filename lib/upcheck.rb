@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require_relative "upcheck/version"
+require_relative "upcheck/errors"
 require_relative "upcheck/configuration"
+require_relative "upcheck/http_client"
 
 module Upcheck
-  class Error < StandardError; end
-
   class << self
     def configuration
       @configuration ||= Configuration.new
