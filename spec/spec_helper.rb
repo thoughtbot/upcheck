@@ -4,6 +4,7 @@ require "upcheck"
 require "webmock/rspec"
 require_relative "support/fixtures"
 require_relative "support/upcheck_helpers"
+require_relative "support/shared_examples/provider_adapter"
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
