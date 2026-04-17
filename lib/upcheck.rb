@@ -8,6 +8,7 @@ require_relative "upcheck/resource"
 require_relative "upcheck/component"
 require_relative "upcheck/incident"
 require_relative "upcheck/registry"
+require_relative "upcheck/adapters/statuspage"
 require_relative "upcheck/provider"
 
 module Upcheck
@@ -25,7 +26,7 @@ module Upcheck
     end
 
     def for(name)
-      Provider.new(Registry.resolve(name))
+      Provider.new(Adapters::Statuspage.new(Registry.resolve(name)))
     end
   end
 end

@@ -1,52 +1,54 @@
 # frozen_string_literal: true
 
 RSpec.describe Upcheck::Provider do
-  let(:base_url) { "https://status.test.example.com" }
-  let(:status_url) { "#{base_url}/api/v2/status.json" }
+  def adapter(status: "none", description: "All Systems Operational",
+    components: [], incidents: [], scheduled_maintenances: [])
+    instance_double(
+      Upcheck::Adapters::Statuspage,
+      status: status,
+      description: description,
+      components: components,
+      incidents: incidents,
+      scheduled_maintenances: scheduled_maintenances
+    )
+  end
 
   describe "#status" do
-    it "returns the raw indicator string from the Statuspage response" do
-      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_minor.json"))
-
-      expect(described_class.new(base_url).status).to eq("minor")
+    it "delegates to the adapter" do
+      expect(described_class.new(adapter(status: "minor")).status).to eq("minor")
     end
+  end
 
-    it "caches the response so it only hits the network once per provider" do
-      stub_request(:get, status_url)
-        .to_return(status: 200, body: Fixtures.read("status_operational.json"))
+  describe "#description" do
+    it "delegates to the adapter" do
+      provider = described_class.new(adapter(description: "All Systems Operational"))
 
-      provider = described_class.new(base_url)
-      provider.status
-      provider.status
-
-      expect(WebMock).to have_requested(:get, status_url).once
+      expect(provider.description).to eq("All Systems Operational")
     end
   end
 
   describe "query methods" do
-    it "operational? is true when indicator is none" do
-      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_operational.json"))
-      expect(described_class.new(base_url).operational?).to be(true)
+    it "operational? is true when the adapter reports none" do
+      expect(described_class.new(adapter(status: "none")).operational?).to be(true)
     end
 
-    it "operational? is false when there is any incident" do
-      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_minor.json"))
-      expect(described_class.new(base_url).operational?).to be(false)
+    it "operational? is false for any incident" do
+      expect(described_class.new(adapter(status: "minor")).operational?).to be(false)
     end
 
-    it "degraded? is true only for minor indicator" do
-      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_minor.json"))
-      expect(described_class.new(base_url).degraded?).to be(true)
+    it "degraded? is true only for minor" do
+      expect(described_class.new(adapter(status: "minor")).degraded?).to be(true)
+      expect(described_class.new(adapter(status: "major")).degraded?).to be(false)
     end
 
     it "major_outage? is true for major or critical" do
-      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_critical.json"))
-      expect(described_class.new(base_url).major_outage?).to be(true)
+      expect(described_class.new(adapter(status: "major")).major_outage?).to be(true)
+      expect(described_class.new(adapter(status: "critical")).major_outage?).to be(true)
+      expect(described_class.new(adapter(status: "minor")).major_outage?).to be(false)
     end
 
-    it "maintenance? is true only for maintenance indicator" do
-      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_maintenance.json"))
-      provider = described_class.new(base_url)
+    it "maintenance? is true only for maintenance" do
+      provider = described_class.new(adapter(status: "maintenance"))
 
       expect(provider.maintenance?).to be(true)
       expect(provider.operational?).to be(false)
@@ -55,11 +57,34 @@ RSpec.describe Upcheck::Provider do
     end
   end
 
-  describe "#description" do
-    it "returns the human-readable description from the status endpoint" do
-      stub_request(:get, status_url).to_return(status: 200, body: Fixtures.read("status_operational.json"))
+  describe "delegated collections" do
+    it "returns the adapter's components, incidents, and scheduled maintenances" do
+      components = [double("component")]
+      incidents = [double("incident")]
+      maintenances = [double("scheduled_maintenance")]
+      provider = described_class.new(
+        adapter(components: components, incidents: incidents, scheduled_maintenances: maintenances)
+      )
 
-      expect(described_class.new(base_url).description).to eq("All Systems Operational")
+      expect(provider.components).to eq(components)
+      expect(provider.incidents).to eq(incidents)
+      expect(provider.scheduled_maintenances).to eq(maintenances)
+    end
+  end
+
+  describe "#component" do
+    it "finds a component by name from the adapter's components list" do
+      api = double("component", name: "API")
+      web = double("component", name: "Web")
+      provider = described_class.new(adapter(components: [api, web]))
+
+      expect(provider.component("Web")).to eq(web)
+    end
+
+    it "returns nil when no component matches" do
+      provider = described_class.new(adapter(components: [double("component", name: "API")]))
+
+      expect(provider.component("Missing")).to be_nil
     end
   end
 end

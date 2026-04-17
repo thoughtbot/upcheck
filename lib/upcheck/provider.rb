@@ -8,43 +8,22 @@ module Upcheck
     INDICATOR_CRITICAL = "critical"
     INDICATOR_MAINTENANCE = "maintenance"
 
-    attr_reader :base_url
-
-    def initialize(base_url, http_client: HTTPClient.new)
-      @base_url = base_url.to_s.delete_suffix("/")
-      @http_client = http_client
+    def initialize(adapter)
+      @adapter = adapter
     end
 
-    def status = status_payload.fetch("indicator")
-    def description = status_payload.fetch("description")
+    def status = adapter.status
+    def description = adapter.description
+    def components = adapter.components
+    def incidents = adapter.incidents
+    def scheduled_maintenances = adapter.scheduled_maintenances
+
     def operational? = status == INDICATOR_NONE
     def degraded? = status == INDICATOR_MINOR
     def major_outage? = status == INDICATOR_MAJOR || status == INDICATOR_CRITICAL
     def maintenance? = status == INDICATOR_MAINTENANCE
     def component(name) = components.find { |component| component.name == name }
 
-    def components
-      @components ||= Component.build_all(http_get("components.json")["components"])
-    end
-
-    def incidents
-      @incidents ||= fetch_incidents("incidents/unresolved.json", "incidents")
-    end
-
-    def scheduled_maintenances
-      @scheduled_maintenances ||= fetch_incidents("scheduled-maintenances/active.json", "scheduled_maintenances")
-    end
-
-    private
-
-    attr_reader :http_client
-
-    def status_payload
-      @status_payload ||= http_get("status.json").fetch("status")
-    end
-
-    def fetch_incidents(path, key) = Incident.build_all(http_get(path)[key])
-
-    def http_get(path) = http_client.get_json("#{base_url}/api/v2/#{path}")
+    private attr_reader :adapter
   end
 end
