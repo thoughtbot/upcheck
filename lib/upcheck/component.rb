@@ -10,24 +10,10 @@ module Upcheck
 
     attribute :name, :status, :description
 
-    def operational?
-      status == STATUS_OPERATIONAL
-    end
-
-    def degraded?
-      status == STATUS_DEGRADED_PERFORMANCE
-    end
-
-    def partial_outage?
-      status == STATUS_PARTIAL_OUTAGE
-    end
-
-    def major_outage?
-      status == STATUS_MAJOR_OUTAGE
-    end
-
-    def maintenance?
-      status == STATUS_UNDER_MAINTENANCE
-    end
+    def operational? = status == STATUS_OPERATIONAL
+    def degraded? = status == STATUS_DEGRADED_PERFORMANCE
+    def partial_outage? = status == STATUS_PARTIAL_OUTAGE
+    def major_outage? = status == STATUS_MAJOR_OUTAGE
+    def maintenance? = status == STATUS_UNDER_MAINTENANCE
   end
 end

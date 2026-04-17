@@ -15,36 +15,16 @@ module Upcheck
       @http_client = http_client
     end
 
-    def status
-      status_payload.fetch("indicator")
-    end
-
-    def description
-      status_payload.fetch("description")
-    end
-
-    def operational?
-      status == INDICATOR_NONE
-    end
-
-    def degraded?
-      status == INDICATOR_MINOR
-    end
-
-    def major_outage?
-      status == INDICATOR_MAJOR || status == INDICATOR_CRITICAL
-    end
-
-    def maintenance?
-      status == INDICATOR_MAINTENANCE
-    end
+    def status = status_payload.fetch("indicator")
+    def description = status_payload.fetch("description")
+    def operational? = status == INDICATOR_NONE
+    def degraded? = status == INDICATOR_MINOR
+    def major_outage? = status == INDICATOR_MAJOR || status == INDICATOR_CRITICAL
+    def maintenance? = status == INDICATOR_MAINTENANCE
+    def component(name) = components.find { |component| component.name == name }
 
     def components
       @components ||= Component.build_all(http_get("components.json")["components"])
-    end
-
-    def component(name)
-      components.find { |component| component.name == name }
     end
 
     def incidents
@@ -63,12 +43,8 @@ module Upcheck
       @status_payload ||= http_get("status.json").fetch("status")
     end
 
-    def fetch_incidents(path, key)
-      Incident.build_all(http_get(path)[key])
-    end
+    def fetch_incidents(path, key) = Incident.build_all(http_get(path)[key])
 
-    def http_get(path)
-      http_client.get_json("#{base_url}/api/v2/#{path}")
-    end
+    def http_get(path) = http_client.get_json("#{base_url}/api/v2/#{path}")
   end
 end
