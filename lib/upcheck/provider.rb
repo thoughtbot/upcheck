@@ -42,12 +42,20 @@ module Upcheck
       components.find { |component| component.name == name }
     end
 
+    def incidents
+      @incidents ||= fetch_incidents("incidents/unresolved.json", "incidents")
+    end
+
     private
 
     attr_reader :http_client
 
     def status_payload
       @status_payload ||= http_get("status.json").fetch("status")
+    end
+
+    def fetch_incidents(path, key)
+      http_get(path).fetch(key, []).map { |p| Incident.new(p) }
     end
 
     def http_get(path)

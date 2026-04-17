@@ -6,6 +6,7 @@ require_relative "upcheck/configuration"
 require_relative "upcheck/http_client"
 require_relative "upcheck/resource"
 require_relative "upcheck/component"
+require_relative "upcheck/incident"
 require_relative "upcheck/registry"
 require_relative "upcheck/provider"
 
