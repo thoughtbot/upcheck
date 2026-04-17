@@ -83,6 +83,30 @@ end
 | `http_timeout` | `5` | Seconds to wait for both open and read on each HTTP request. |
 | `register_provider(name, &block)` | (none) | Registers a provider. The block is called on each `Upcheck.for(name)` and must return an adapter instance (e.g., `Upcheck::Adapters::Statuspage.new(url)`, `Upcheck::Adapters::Heroku.new`, or your own). Overrides built-ins when the name matches. |
 
+### Custom adapters
+
+If your target doesn't speak Statuspage and isn't one of the built-ins, write an
+adapter class that satisfies Upcheck's five-method contract and register it:
+
+```ruby
+class MyAdapter
+  def status                 # => "none" | "minor" | "major" | "critical" | "maintenance"
+  def description            # => String, a human-readable summary
+  def components             # => Array<Upcheck::Component>
+  def incidents              # => Array<Upcheck::Incident>
+  def scheduled_maintenances # => Array<Upcheck::Incident>
+end
+
+Upcheck.configure do |config|
+  config.register_provider(:my_service) { MyAdapter.new(...) }
+end
+
+Upcheck.for(:my_service).operational?
+```
+
+`lib/upcheck/adapters/heroku.rb` is a real-world example — it translates
+Heroku's per-system colors and incident format into Upcheck's canonical shape.
+
 ## Built-in providers
 
 Upcheck ships with a registry of well-known providers so you can reference them by symbol:
@@ -105,7 +129,7 @@ Upcheck ships with a registry of well-known providers so you can reference them 
 | `:heroku` | https://status.heroku.com |
 
 Missing one? Register it at runtime. Any service hosted on Atlassian Statuspage
-works out of the box; other formats need a custom adapter.
+works out of the box; other formats need a [custom adapter](#custom-adapters).
 
 ```ruby
 Upcheck.configure do |config|
