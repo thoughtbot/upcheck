@@ -12,7 +12,10 @@ module Upcheck
       cloudflare: "https://www.cloudflarestatus.com",
       discord: "https://discordstatus.com",
       digitalocean: "https://status.digitalocean.com",
-      vercel: "https://www.vercel-status.com"
+      vercel: "https://www.vercel-status.com",
+      stripe: "https://www.stripestatus.com",
+      shopify: "https://www.shopifystatus.com",
+      sentry: "https://status.sentry.io"
     }.freeze
 
     extend self

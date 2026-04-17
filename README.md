@@ -99,6 +99,9 @@ Upcheck ships with a registry of well-known providers so you can reference them 
 | `:discord` | https://discordstatus.com |
 | `:digitalocean` | https://status.digitalocean.com |
 | `:vercel` | https://www.vercel-status.com |
+| `:stripe` | https://www.stripestatus.com |
+| `:shopify` | https://www.shopifystatus.com |
+| `:sentry` | https://status.sentry.io |
 
 Missing one? Register it at runtime. Any service hosted on Atlassian Statuspage
 will work.
