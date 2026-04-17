@@ -32,7 +32,7 @@ Or install it manually:
 gem install upcheck
 ```
 
-Upcheck requires Ruby 3.0+ and has no runtime dependencies beyond the standard library.
+Upcheck requires Ruby 3.2+ and has no runtime dependencies beyond the standard library.
 
 ## Quick start
 
