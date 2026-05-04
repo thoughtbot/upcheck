@@ -1,12 +1,23 @@
 # frozen_string_literal: true
 
 RSpec.describe Upcheck::Component do
-  describe "#name and #status" do
-    it "exposes the raw name and status from the payload" do
-      component = described_class.new("name" => "API", "status" => "operational")
+  describe "#id, #name, and #status" do
+    it "exposes the raw id, name, and status from the payload" do
+      component = described_class.new(
+        "id" => "k8w3r06qmzrp",
+        "name" => "API",
+        "status" => "operational"
+      )
 
+      expect(component.id).to eq("k8w3r06qmzrp")
       expect(component.name).to eq("API")
       expect(component.status).to eq("operational")
+    end
+
+    it "leaves #id as nil when the payload omits it" do
+      component = described_class.new("name" => "API", "status" => "operational")
+
+      expect(component.id).to be_nil
     end
   end
 

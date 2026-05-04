@@ -34,6 +34,13 @@ RSpec.describe "Components integration" do
     expect(pulls.partial_outage?).to be(true)
   end
 
+  it "looks up a component by its stable id" do
+    git = Upcheck.for(:test).component(id: "8l4ygp009s5s")
+
+    expect(git.name).to eq("Git Operations")
+    expect(git.operational?).to be(true)
+  end
+
   it "returns nil when the component is not found" do
     expect(Upcheck.for(:test).component(name: "Nope")).to be_nil
   end

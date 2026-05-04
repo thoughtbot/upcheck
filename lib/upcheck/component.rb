@@ -8,7 +8,7 @@ module Upcheck
     STATUS_MAJOR_OUTAGE = "major_outage"
     STATUS_UNDER_MAINTENANCE = "under_maintenance"
 
-    attribute :name, :status, :description
+    attribute :id, :name, :status, :description
 
     def operational? = status == STATUS_OPERATIONAL
     def degraded? = status == STATUS_DEGRADED_PERFORMANCE

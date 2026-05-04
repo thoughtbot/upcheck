@@ -54,6 +54,7 @@ provider.description      # => "All Systems Operational"
 # Components
 provider.components       # => [#<Upcheck::Component name="Claude API", ...>, ...]
 api = provider.component(name: "Claude API")  # returns nil if no component by that name
+api = provider.component(id: "k8w3r06qmzrp")  # rename-resilient lookup by Statuspage id
 api.operational?         # => false
 api.status               # => "degraded_performance"
 

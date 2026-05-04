@@ -22,7 +22,11 @@ module Upcheck
     def degraded? = status == INDICATOR_MINOR
     def major_outage? = status == INDICATOR_MAJOR || status == INDICATOR_CRITICAL
     def maintenance? = status == INDICATOR_MAINTENANCE
-    def component(name:) = components.find { |component| component.name == name }
+
+    def component(id: nil, name: nil)
+      raise ArgumentError, "pass exactly one of id: or name:" if [id, name].compact.size != 1
+      components.find { |c| (id && c.id == id) || (name && c.name == name) }
+    end
 
     private attr_reader :adapter
   end

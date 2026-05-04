@@ -74,17 +74,47 @@ RSpec.describe Upcheck::Provider do
 
   describe "#component" do
     it "finds a component by name from the adapter's components list" do
-      api = double("component", name: "API")
-      web = double("component", name: "Web")
+      api = double("component", id: "a1", name: "API")
+      web = double("component", id: "w1", name: "Web")
       provider = described_class.new(adapter(components: [api, web]))
 
       expect(provider.component(name: "Web")).to eq(web)
     end
 
+    it "finds a component by id from the adapter's components list" do
+      api = double("component", id: "a1", name: "API")
+      web = double("component", id: "w1", name: "Web")
+      provider = described_class.new(adapter(components: [api, web]))
+
+      expect(provider.component(id: "w1")).to eq(web)
+    end
+
     it "returns nil when no component matches" do
-      provider = described_class.new(adapter(components: [double("component", name: "API")]))
+      provider = described_class.new(
+        adapter(components: [double("component", id: "a1", name: "API")])
+      )
 
       expect(provider.component(name: "Missing")).to be_nil
+      expect(provider.component(id: "missing")).to be_nil
+    end
+
+    it "ignores nil ids on components when looking up by id" do
+      heroku_component = double("component", id: nil, name: "Database")
+      provider = described_class.new(adapter(components: [heroku_component]))
+
+      expect(provider.component(id: "anything")).to be_nil
+    end
+
+    it "raises when neither id nor name is given" do
+      provider = described_class.new(adapter(components: []))
+
+      expect { provider.component }.to raise_error(ArgumentError, /exactly one/)
+    end
+
+    it "raises when both id and name are given" do
+      provider = described_class.new(adapter(components: []))
+
+      expect { provider.component(id: "x", name: "y") }.to raise_error(ArgumentError, /exactly one/)
     end
   end
 end
