@@ -22,7 +22,7 @@ module Upcheck
     def degraded? = status == INDICATOR_MINOR
     def major_outage? = status == INDICATOR_MAJOR || status == INDICATOR_CRITICAL
     def maintenance? = status == INDICATOR_MAINTENANCE
-    def component(name) = components.find { |component| component.name == name }
+    def component(name:) = components.find { |component| component.name == name }
 
     private attr_reader :adapter
   end

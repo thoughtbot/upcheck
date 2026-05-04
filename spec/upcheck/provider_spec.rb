@@ -78,13 +78,13 @@ RSpec.describe Upcheck::Provider do
       web = double("component", name: "Web")
       provider = described_class.new(adapter(components: [api, web]))
 
-      expect(provider.component("Web")).to eq(web)
+      expect(provider.component(name: "Web")).to eq(web)
     end
 
     it "returns nil when no component matches" do
       provider = described_class.new(adapter(components: [double("component", name: "API")]))
 
-      expect(provider.component("Missing")).to be_nil
+      expect(provider.component(name: "Missing")).to be_nil
     end
   end
 end

@@ -9,7 +9,7 @@ The entry point is `Upcheck.for(:provider)`, which reads like a sentence:
 ```ruby
 Upcheck.for(:anthropic).operational?                       # => true
 Upcheck.for(:openai).incidents                             # => [#<Upcheck::Incident ...>]
-Upcheck.for(:github).component("Git Operations").operational?
+Upcheck.for(:github).component(name: "Git Operations").operational?
 ```
 
 > [!NOTE]
@@ -53,7 +53,7 @@ provider.description      # => "All Systems Operational"
 
 # Components
 provider.components       # => [#<Upcheck::Component name="Claude API", ...>, ...]
-api = provider.component("Claude API")  # returns nil if no component by that name
+api = provider.component(name: "Claude API")  # returns nil if no component by that name
 api.operational?         # => false
 api.status               # => "degraded_performance"
 

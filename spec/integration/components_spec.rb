@@ -15,10 +15,10 @@ RSpec.describe "Components integration" do
   it "looks up a component by name and exposes its status" do
     provider = Upcheck.for(:test)
 
-    git = provider.component("Git Operations")
-    issues = provider.component("Issues")
-    webhooks = provider.component("Webhooks")
-    pulls = provider.component("Pull Requests")
+    git = provider.component(name: "Git Operations")
+    issues = provider.component(name: "Issues")
+    webhooks = provider.component(name: "Webhooks")
+    pulls = provider.component(name: "Pull Requests")
 
     expect(git.status).to eq(Upcheck::Component::STATUS_OPERATIONAL)
     expect(git.operational?).to be(true)
@@ -35,6 +35,6 @@ RSpec.describe "Components integration" do
   end
 
   it "returns nil when the component is not found" do
-    expect(Upcheck.for(:test).component("Nope")).to be_nil
+    expect(Upcheck.for(:test).component(name: "Nope")).to be_nil
   end
 end
