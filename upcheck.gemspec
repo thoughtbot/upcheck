@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
     active. Use it to show degradation banners, fail fast in background jobs,
     or switch to a fallback provider when a dependency is down.
   DESC
-  spec.homepage = "https://github.com/MatheusRich/upcheck"
+  spec.homepage = "https://github.com/thoughtbot/upcheck"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
 
