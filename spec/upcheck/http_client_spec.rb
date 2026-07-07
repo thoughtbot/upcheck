@@ -67,6 +67,38 @@ RSpec.describe Upcheck::HTTPClient do
       }.to raise_error(Upcheck::ConnectionError)
     end
 
+    it "raises Upcheck::ConnectionError when the TLS handshake fails" do
+      stub_request(:get, url).to_raise(OpenSSL::SSL::SSLError.new("SSL_connect returned=1 errno=0"))
+
+      expect {
+        described_class.new.get_json(url)
+      }.to raise_error(Upcheck::ConnectionError)
+    end
+
+    it "raises Upcheck::ConnectionError when the connection is reset" do
+      stub_request(:get, url).to_raise(Errno::ECONNRESET)
+
+      expect {
+        described_class.new.get_json(url)
+      }.to raise_error(Upcheck::ConnectionError)
+    end
+
+    it "raises Upcheck::ConnectionError when the server closes the connection mid-response" do
+      stub_request(:get, url).to_raise(EOFError.new("end of file reached"))
+
+      expect {
+        described_class.new.get_json(url)
+      }.to raise_error(Upcheck::ConnectionError)
+    end
+
+    it "raises Upcheck::ConnectionError when the server speaks invalid HTTP" do
+      stub_request(:get, url).to_raise(Net::HTTPBadResponse.new("wrong status line"))
+
+      expect {
+        described_class.new.get_json(url)
+      }.to raise_error(Upcheck::ConnectionError)
+    end
+
     it "applies the configured http_timeout to Net::HTTP" do
       Upcheck.configure { |c| c.http_timeout = 7 }
       stub_request(:get, url).to_return(status: 200, body: "{}")
