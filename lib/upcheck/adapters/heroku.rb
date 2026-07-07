@@ -7,20 +7,23 @@ module Upcheck
 
       COLOR_TO_STATUS = {
         "green" => "none",
+        "blue" => "maintenance",
         "yellow" => "minor",
         "red" => "major"
       }.freeze
 
-      COLOR_SEVERITY = {"green" => 0, "yellow" => 1, "red" => 2}.freeze
+      COLOR_SEVERITY = {"green" => 0, "blue" => 1, "yellow" => 2, "red" => 3}.freeze
 
       STATUS_TO_DESCRIPTION = {
         "none" => "All systems operational",
+        "maintenance" => "Systems under maintenance",
         "minor" => "Some systems experiencing degradation",
         "major" => "Major service disruption"
       }.freeze
 
       COLOR_TO_COMPONENT_STATUS = {
         "green" => "operational",
+        "blue" => "under_maintenance",
         "yellow" => "degraded_performance",
         "red" => "major_outage"
       }.freeze
@@ -30,8 +33,13 @@ module Upcheck
       end
 
       def status
-        worst_color = payload.fetch("status").map { |s| s["status"] }.max_by { |c| COLOR_SEVERITY.fetch(c, 0) }
-        COLOR_TO_STATUS.fetch(worst_color)
+        worst_color = payload.fetch("status")
+          .map { |s| s["status"] }
+          .max_by { |color| translate(COLOR_SEVERITY, color) }
+
+        return "none" if worst_color.nil?
+
+        translate(COLOR_TO_STATUS, worst_color)
       end
 
       def description = STATUS_TO_DESCRIPTION.fetch(status)
@@ -40,7 +48,7 @@ module Upcheck
         @components ||= payload.fetch("status").map do |entry|
           Component.new(
             "name" => entry["system"],
-            "status" => COLOR_TO_COMPONENT_STATUS.fetch(entry["status"])
+            "status" => translate(COLOR_TO_COMPONENT_STATUS, entry["status"])
           )
         end
       end
@@ -59,6 +67,12 @@ module Upcheck
 
       def payload
         @payload ||= http_client.get_json(URL)
+      end
+
+      def translate(map, color)
+        map.fetch(color) do
+          raise ParseError, "Unexpected Heroku system status color: #{color.inspect}"
+        end
       end
 
       def build_incidents(list)

@@ -44,6 +44,40 @@ RSpec.describe Upcheck::Adapters::Heroku do
 
       expect(described_class.new.status).to eq("minor")
     end
+
+    it "returns 'maintenance' when the worst system is blue" do
+      stub_heroku("current_status_maintenance.json")
+
+      expect(described_class.new.status).to eq("maintenance")
+    end
+
+    it "ranks degradation above maintenance when both are present" do
+      stub_heroku_body({
+        "status" => [
+          {"system" => "Apps", "status" => "blue"},
+          {"system" => "Data", "status" => "yellow"}
+        ],
+        "incidents" => [], "scheduled" => []
+      })
+
+      expect(described_class.new.status).to eq("minor")
+    end
+
+    it "returns 'none' when Heroku reports no systems" do
+      stub_heroku_body({"status" => [], "incidents" => [], "scheduled" => []})
+
+      expect(described_class.new.status).to eq("none")
+    end
+
+    it "raises Upcheck::ParseError on an unrecognized status color" do
+      stub_heroku_body({
+        "status" => [{"system" => "Apps", "status" => "purple"}],
+        "incidents" => [], "scheduled" => []
+      })
+
+      expect { described_class.new.status }
+        .to raise_error(Upcheck::ParseError, /purple/)
+    end
   end
 
   describe "#description" do
@@ -63,6 +97,12 @@ RSpec.describe Upcheck::Adapters::Heroku do
       stub_heroku("current_status_major.json")
 
       expect(described_class.new.description).to eq("Major service disruption")
+    end
+
+    it "synthesizes a maintenance message when status is 'maintenance'" do
+      stub_heroku("current_status_maintenance.json")
+
+      expect(described_class.new.description).to eq("Systems under maintenance")
     end
   end
 
@@ -84,6 +124,25 @@ RSpec.describe Upcheck::Adapters::Heroku do
       expect(components.find { |c| c.name == "Apps" }.status).to eq("degraded_performance")
       expect(components.find { |c| c.name == "Apps" }.degraded?).to be(true)
       expect(components.find { |c| c.name == "Data" }.operational?).to be(true)
+    end
+
+    it "maps blue systems to under_maintenance components" do
+      stub_heroku("current_status_maintenance.json")
+
+      apps = described_class.new.components.find { |c| c.name == "Apps" }
+
+      expect(apps.status).to eq("under_maintenance")
+      expect(apps.maintenance?).to be(true)
+    end
+
+    it "raises Upcheck::ParseError on an unrecognized system color" do
+      stub_heroku_body({
+        "status" => [{"system" => "Apps", "status" => "purple"}],
+        "incidents" => [], "scheduled" => []
+      })
+
+      expect { described_class.new.components }
+        .to raise_error(Upcheck::ParseError, /purple/)
     end
   end
 

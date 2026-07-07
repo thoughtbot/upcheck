@@ -18,4 +18,9 @@ module UpcheckHelpers
     stub_request(:get, Upcheck::Adapters::Heroku::URL)
       .to_return(status: status, body: Fixtures.read("heroku/#{fixture}"))
   end
+
+  def stub_heroku_body(payload, status: 200)
+    stub_request(:get, Upcheck::Adapters::Heroku::URL)
+      .to_return(status: status, body: JSON.generate(payload))
+  end
 end
