@@ -6,4 +6,13 @@ RSpec.describe "Heroku provider integration" do
 
     expect(Upcheck.for(:heroku).operational?).to be(true)
   end
+
+  it "reports maintenance when a Heroku system is blue" do
+    stub_heroku("current_status_maintenance.json")
+
+    provider = Upcheck.for(:heroku)
+
+    expect(provider.maintenance?).to be(true)
+    expect(provider.operational?).to be(false)
+  end
 end
