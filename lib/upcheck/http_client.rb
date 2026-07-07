@@ -3,6 +3,7 @@
 require "net/http"
 require "json"
 require "uri"
+require "openssl"
 
 module Upcheck
   class HTTPClient
@@ -40,7 +41,8 @@ module Upcheck
       end
     rescue Net::OpenTimeout, Net::ReadTimeout => e
       raise TimeoutError, "Request to #{url} timed out: #{e.message}"
-    rescue SocketError, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH => e
+    rescue SocketError, OpenSSL::SSL::SSLError, EOFError, Net::HTTPBadResponse,
+      Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EHOSTUNREACH, Errno::ENETUNREACH => e
       raise ConnectionError, "Unable to connect to #{url}: #{e.message}"
     end
 
